@@ -1,0 +1,10 @@
+[package]
+name = "causet-adjunctions"
+version = "0.1.0"
+authors = ["Karl Whitford <cevb@protonmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+failure = "0.1.1"
