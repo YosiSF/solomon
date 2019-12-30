@@ -8,23 +8,4 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the
 // specific language governing permissions and limitations under the License.
 
-use std::collections::BTreeSet;
-use std::fmt::{
-    Debug,
-    Formatter,
-};
-
-#[derive(PartialEq, Eq, Clone, Copy, Debug)]
-pub enum CausetsTable {
-
-    Causets,            //Non-fulltext causets table.
-    FulltextValues,     //virtual table mapping Ids to strings.
-    FullTextCausets,    //The fulltext-causets view
-    AllCausets,         //Fulltext and non-fulltext causets.
-    Computed(usize),    //A computed table, tracked elsewhere in the query
-    Transactions,      //The transactions table, tracked elsewhere in the query.
-
-}
-
-
 

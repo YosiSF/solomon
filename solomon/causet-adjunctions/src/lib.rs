@@ -16,6 +16,26 @@ pub enum CausetCones {
     Transactions,
 }
 
+//Strongly typed storage
+pun enum ConeOrExpression {
+    Cone(QualifiedAlias),
+    ExistingCone(Name),
+    Causetid(Causetid),
+    Integer(i32),
+    Long(i64),
+    Value(TypedValue),
+    // Some aggregates (`min`, `max`, `avg`) can be over 0 rows, and therefore can be `NULL`; that
+    // needs special treatment.
+    NullableAggregate(Box<Expression>, ValueType),      // Track the return type.
+    Expression(Box<Expression>, ValueType),             // Track the return type.
+
+}
+
+
+
+impl 
+
+
 #[derive(PartialEq, Eq, Debug)]
 pub enum ComputedCone {
     
