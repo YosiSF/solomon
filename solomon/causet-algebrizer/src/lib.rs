@@ -26,7 +26,7 @@ mod validate;
 mod clauses;
 
 use einstein_traits::{
-	Causetid,
+	Solitonid,
 	TypedValue,
 	ValueType,
 };

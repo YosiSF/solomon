@@ -20,7 +20,7 @@ pub enum CausetCones {
 pun enum ConeOrExpression {
     Cone(QualifiedAlias),
     ExistingCone(Name),
-    Causetid(Causetid),
+    Solitonid(Solitonid),
     Integer(i32),
     Long(i64),
     Value(TypedValue),

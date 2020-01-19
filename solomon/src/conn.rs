@@ -18,6 +18,9 @@ use std::collections::{
     BTreeMap,
 };
 
+use postgres::{Connection, TlsMode, Error};
+
+
 use std::sync::{
     Arc,
     Mutex,
@@ -32,8 +35,8 @@ use einsteindbn;
 
 pub use core_traits::{
     Attribute,
-    Causetid,
-    KnownCausetid,
+    Solitonid,
+    KnownSolitonid,
     HopfMap,
     TypedCausetValue,
     CausetValueType,
@@ -49,7 +52,7 @@ use solomon_core::{
 
 use solomon_transactions::{
 
-}
+};
 
 use solomon_db::db;
 use solomon_db::{
@@ -76,18 +79,23 @@ use solomon_transaction::causet::{
 
 };
 
+//A mutable safe reference to the current solomon store.
 pub struct Conn {
 
-    metadata: Mutex<Metadata>,
+    //exclusive read and write guarantees lead to Mutex, infrequent changing parts
+    // such as (schema, cache, timestamp) shareable across threads. A long running query
+    //is dependent on the current schema thus restricted to being a local writer thread which moves
+    //udf or metadata -- forward in time.
+    udfdata: Mutex<udfdata>,
 
-    pub(crate)tx_red_observer_service: Mutex<TxObservationService>,
+    pub(crate)tx_red_observer_service: Mutex<TxRedObservationService>,
 
 }
 
 impl conn {
   fn new(partition_map: PartitionMap, schema: Schema) -> Conn  {
       Conn {
-          metadata: Mutex::new(Metadata::new(0, partition_map, Arc::new(schema), Default::default())),
+          udfdata: Mutex::new(udfdata::new(0, partition_map, Arc::new(schema), Default::default())),
           tx_red_observer_service: Mutex::new(TxRedObversationService::new()),
       }
 }
@@ -99,13 +107,13 @@ impl conn {
 
     pub fn current_schema(&self) -> Arc<Schema> {
 
-        self.metadata.lock().unwrap().schema.clone()
+        self.udfdata.lock().unwrap().schema.clone()
     }
 
-    pub fn last_tx_id(&self) -> Causetid {
-        let metadata = self.metadata.lock().unwrap();
+    pub fn last_tx_id(&self) -> Solitonid {
+        let udfdata = self.udfdata.lock().unwrap();
 
-        metadata.partition_map[":db.part/tx"].next_causetid()-1
+        udfdata.partition_map[":db.part/tx"].next_Solitonid()-1
     }
 
     pub fn solitonq_once<T>(&self,
@@ -113,8 +121,8 @@ impl conn {
                             causet: &str,
                             inputs: T) -> Result<CausetOutput>
             where T: Into<Option<CausetInputs>> {
-                let metadata = self.metadata.lock().unwrap();
-                let known = Known::new(&*metadata.schema, Some(&metadata.attribute_cache));
+                let udfdata = self.udfdata.lock().unwrap();
+                let known = Known::new(&*udfdata.schema, Some(&udfdata.attribute_cache));
 
             solitonq_once(
                 sqlite,
@@ -124,16 +132,26 @@ impl conn {
 
     }
 
-    //Query the Solomon store without the cache.
+    //Query the Solomon store without the cache. Using only metadata
     pub fn solitonq_uncached<T>(&self,
                                 sqlite: &rusqlite::Connection,
                                 causet: &str,
                                 inputs: T) -> Result<CausetOutput> where T: Into<Option<CausetInputs>> {
-                let metadata = self.metadata.lock().unwrap();
+                let udfdata = self.udfdata.lock().unwrap();
                 solitonq_uncached(sqlite,
-                                  &*metadata.Schema,
+                                  &*udfdata.Schema,
                                   causet,
                                   inputs)
+    }
+
+    pub fn solitonq_prepare<'sqlite, 'query, T>(&self,
+                        sqlite: &'sqlite rusqlite::Connection,
+                        causet: &'causet str,
+                        inputs: T) -> PreparedResult<'sqlite>
+
+            where T: Into<Option<CausetInputs>> {
+                let udfdata = self.udfdata.lock().unwrap();
+                let known = Known::new(&*udfdata.schema, Some(&udfdata.attribute_cache));
     }
 
 

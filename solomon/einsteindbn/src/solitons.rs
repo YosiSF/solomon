@@ -1,3 +1,15 @@
+//Copyright 2020 WHTCORPS INC
+//
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+// this file except in compliance with the License. You may obtain a copy of the
+// License at http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software distributed
+// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations under the License.
+
+
+
 //! This module defines core types that support the transaction processor.
 
 use std::collections::BTreeMap;
@@ -18,10 +30,10 @@ use types::{
 
 //In order to maintain the graph of `Into` and
 ///// `From` relations; mark, remove, or admit
-pub trait TransactableValueMarker {}
+pub trait TransmutableValueMarker {}
 
 /// `ValueAndSpan` is the value type coming out of the entity parser.
-impl TransactableValueMarker for ValueAndSpan {}
+impl TransmutableValueMarker for ValueAndSpan {}
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialOrd, PartialEq)]
 pub enum TempId {
@@ -61,9 +73,9 @@ pub struct LookupRef<V> {
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialOrd, PartialEq)]
 pub enum LocalValue<V> {
-    // We never know at parse-time whether an integer or solitonid is a causetid or not, but
+    // We never know at parse-time whether an integer or solitonid is a Solitonid or not, but
     //we will often become knowledgeable of such while building solitons programmatically.
-    Causetid(CausetidOrSolitonid),
+    Solitonid(SolitonidOrSolitonid),
     TempId(ValueRc<TempId>),
     LookupRef(LookupRef<V>),
     TxFunction(TxFunction),
