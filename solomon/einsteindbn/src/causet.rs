@@ -10,6 +10,7 @@
 
 
 
+
 use std::collections::{
     BTreeSet,
     HashSet,
@@ -113,6 +114,36 @@ impl std::fmt::Display for Variable {
     }
 }
 
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub enum SrcVar {
+    DefaultSrc,
+    NamedSrc(SrcVarName),
+}
+
+impl FromValue<SrcVar> for SrcVar {
+    fn from_value(v: &::ValueAndSpan) -> Option<SrcVar> {
+        if let ::SpannedValue::PlainSymbol(ref s) = v.inner {
+            SrcVar::from_symbol(s)
+        } else {
+            None
+        }
+    }
+}
+
+impl SrcVar {
+    pub fn from_symbol(sym: &PlainSymbol) -> Option<SrcVar> {
+        if sym.is_src_symbol() {
+            if sym.0 == "$" {
+                Some(SrcVar::DefaultSrc)
+            } else {
+                Some(SrcVar::NamedSrc(sym.name().to_string()))
+            }
+        } else {
+            None
+        }
+    }
+}
+
 //scalar value representations in einsteindbn
 pub enum NonIntegerConstant {
     Boolean(bool),
@@ -134,3 +165,6 @@ impl From<String> for NonIntegerConstant {
         NonIntegerConstant::Text(ValueRc::new(val))
     }
 }
+
+
+

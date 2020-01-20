@@ -32,7 +32,7 @@ use einstein_traits::{
 };
 
 use solomon_einstein::{
-	CachedAttributes,
+	CachedCausets,
 	Schema,
 	parse_causet,
 };
@@ -41,7 +41,7 @@ use solomon_einstein::counter::RcCounter;
 
 pub struct Known<'s, 'c> {
     pub schema: &'s Schema,
-    pub cache: Option<&'c CachedAttributes>,
+    pub cache: Option<&'c CachedCausets>,
 }
 
 impl<'s, 'c> Known<'s, 'c> {
@@ -52,7 +52,7 @@ impl<'s, 'c> Known<'s, 'c> {
         }
     }
 
-    pub fn new(s: &'s Schema, c: Option<&'c CachedAttributes>) -> Known<'s, 'c> {
+    pub fn new(s: &'s Schema, c: Option<&'c CachedCausets>) -> Known<'s, 'c> {
         Known {
             schema: s,
             cache: c,

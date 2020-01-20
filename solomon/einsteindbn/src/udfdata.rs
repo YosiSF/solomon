@@ -8,19 +8,16 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the
 // specific language governing permissions and limitations under the License.
 
+//! Most embedded transactions can transmute the Solomon udf metadata by pulling assertions:
+//!
+//! - They are Additive(eventually consistent means: a convergence between retractions and alterations) mapped to
+//! causetids;
 
-/// Cache traits.
+use failure::ResultExt;
 
-use std::collections::{
-    BTreeSet,
+use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{btree_map::Entry};
+
+use rel_alter_set::{
+   AddRelativisticAlterSet,
 };
-
-pub trait CachedCausets {
-
-    fn is_causet_cached_spacelike(&self, solitonid: Solitonid) -> bool;
-    fn is_causet_cached_timelike(&self, solitonid: Solitonid) -> bool;
-    fn has_cached_causets(&self) -> bool;
-
-    fn get_values_for_
-
-}

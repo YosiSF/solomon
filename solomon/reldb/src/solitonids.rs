@@ -8,19 +8,3 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the
 // specific language governing permissions and limitations under the License.
 
-
-/// Cache traits.
-
-use std::collections::{
-    BTreeSet,
-};
-
-pub trait CachedCausets {
-
-    fn is_causet_cached_spacelike(&self, solitonid: Solitonid) -> bool;
-    fn is_causet_cached_timelike(&self, solitonid: Solitonid) -> bool;
-    fn has_cached_causets(&self) -> bool;
-
-    fn get_values_for_
-
-}
